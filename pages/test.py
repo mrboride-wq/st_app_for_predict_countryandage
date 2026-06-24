@@ -2,69 +2,81 @@ import streamlit as st
 import requests
 import json
 
+
 from datetime import date
 from dateutil.relativedelta import relativedelta
 
-# 関数
-## サーバー側の読み込み
+
+# 関数の定義部分
+
+
+## サーバー側ファイルの読み込み
 def get_user_id(family_name, first_name):
-    #ファイルの読み込み、パスは作業ディレクトリの相対パス
-    with open("C:\\Users\\koyama\\OneDrive\\Desktop\\st_app\\assets\\known_poeple.json", "r",
-              encoding="utf-8") as f:
-        people = json.load(f)
+    # ファイルの読み込み、パスは作業ディレクトリからの相対パス
+    with open(r"C:\Users\koyama\OneDrive\Desktop\st_app\assets\known_poeple.json", "r", encoding="utf-8") as f:
+        people = json.loads(f.read())
     matched = filter(
-        lambda d: d["first_name"] == first_name and
-        d["family_name"] == family_name, people
+        lambda d:d["first_name"] == first_name and d["family_name"] == family_name,
+        people
     )
     matched = list(matched)
-    if len (matched) > 0:
+    if len(matched) > 0:
         return matched[0]["id"]
     else:
         return None
-    #照合結果idを返す
-    
-## Web リソース
+    # 照合結果idを返す
 
-### 名前から年齢の予測
+
+## Webリソースの取得
+
+
+### 名前から年齢を予測
 @st.cache_data
 def agify(first_name):
-    url = f"https://api.agify.io/"
+    url = "https://api.agify.io/"
     params = {"name": first_name}
     response = requests.get(url, params=params)
     result = json.loads(response.content)
-    #resultの例 :　{"count":1, "name": "John", "age": 30}
-    
+    # resultの例 : {"count":1,"name":"伸也","age":54}
+    print(result)
     age = result["age"]
     return age
 
-### 名前から性別の予測
+
+
+
+### 名前から性別を予測
 @st.cache_data
 def genderize(first_name):
-    url = f"https://api.genderize.io/"
+    url = "https://api.genderize.io/"
     params = {"name": first_name}
     response = requests.get(url, params=params)
     result = json.loads(response.content)
-    #resultの例 :　{"count":1, "name": "John", "gender": "male", "probability": 0.93}
-    
+    # resultの例 : {"count":12,"name":"伸也","gender":"male","probability":0.93}
     gender = result["gender"]
-    probability = result["probability"]
-    return gender, probability
+    return gender
 
-### 名前から国籍の予測
+
+
+
+### 名前から国籍を予測
 @st.cache_data
 def nationalize(first_name):
-    url = f"https://api.nationalize.io/"
+    url = "https://api.nationalize.io/"
     params = {"name": first_name}
     response = requests.get(url, params=params)
     result = json.loads(response.content)
-    #resultの例 :　{"count":1, "name": "John", "country": [{"country_id": "US", "probability": 0.429728}]}
-    
+    # resultの例 : {"count":4,"name":"金井","country":[{"country_id":"JP","probability":0.570272},{"country_id":"HK","probability":0.429728}]}
     country = result["country"][0]["country_id"]
-    probability = result["country"][0]["probability"]
-    return country, probability
+    return country
 
-# 以下、表示
+
+
+
+# 以下、表示部分
 st.markdown("# プロファイル予測アプリ")
+
+
 ## ユーザー入力の受け取り
 ### 名前の入力
 family_name = st.text_input("姓を入力してください。")
@@ -91,3 +103,4 @@ if st.button("入力完了"):
             "国籍": country
         }
     )
+
