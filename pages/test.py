@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import json
-
+import os
 
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -13,7 +13,9 @@ from dateutil.relativedelta import relativedelta
 ## サーバー側ファイルの読み込み
 def get_user_id(family_name, first_name):
     # ファイルの読み込み、パスは作業ディレクトリからの相対パス
-    with open(r"C:\Users\koyama\OneDrive\Desktop\st_app\assets\known_poeple.json", "r", encoding="utf-8") as f:
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    json_path = os.path.join(BASE_DIR, "assets", "known_poeple.json")
+    with open(json_path, "r", encoding="utf-8") as f:
         people = json.loads(f.read())
     matched = filter(
         lambda d:d["first_name"] == first_name and d["family_name"] == family_name,
