@@ -3,7 +3,7 @@ import pandas as pd
 import pickle
 
 
-MODEL_PATH = "./assets/models.pkl"
+MODEL_PATH = "./analysis/models.pkl"
 
 
 # 学習モデルの読み込みとキャッシュ関数
